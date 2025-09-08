@@ -1,0 +1,37 @@
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+  <div class="max-w-5xl mx-auto bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
+      Alertas de Vencimiento 
+    </h1>
+
+    <div *ngIf="errorMessage" class="text-red-600 font-medium mb-2">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="!errorMessage && alertas.length === 0" class="text-gray-900 dark:text-white text-center mb-4">
+      No hay alertas de vencimiento próximas.
+    </div>
+
+    <div *ngIf="alertas.length > 0" class="overflow-x-auto">
+      <table class="w-full border-collapse rounded-lg shadow-sm">
+  <thead class="text-white bg-gray-800">
+    <tr>
+      <th class="p-3 text-left">Tipo</th>
+      <th class="p-3 text-left">Descripción</th>   <!-- Cambiado aquí -->
+      <th class="p-3 text-left w-60">Fecha Vencimiento</th>
+      <th class="p-3 text-left w-64">Días Restantes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let alerta of alertas" class="border-b">
+      <td class="p-3">{{ alerta.tipo }}</td>
+      <td class="p-3">{{ alerta.descripcion }}</td> <!-- Mostramos descripción -->
+      <td class="p-3">{{ alerta.fechaVencimiento | date:'shortDate' }}</td>
+      <td class="p-3">{{ alerta.diasRestantes }}</td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+  </div>
+</section>

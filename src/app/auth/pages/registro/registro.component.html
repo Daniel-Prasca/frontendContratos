@@ -1,0 +1,107 @@
+<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+  <div class="flex items-center flex-col gap-y-4">
+    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+      Crea una cuenta
+    </h1>
+  </div>
+
+  <form [formGroup]="form" class="space-y-4 md:space-y-6" (ngSubmit)="onSubmit()">
+    <!-- Nombre -->
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="text"
+          formControlName="firstName"
+          id="firstName"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="firstName"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          Nombres
+        </label>
+      </div>
+      <div class="min-h-5 mt-1">
+        <small *ngIf="isRequired('firstName')" class="text-red-400">Este campo es requerido</small>
+      </div>
+    </div>
+
+    <!-- Apellidos
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="text"
+          formControlName="lastName"
+          id="lastName"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="lastName"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          Apellidos
+        </label>
+      </div>
+    </div> -->
+
+    <!-- Email -->
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="email"
+          formControlName="email"
+          id="email"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="email"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          Correo Electrónico
+        </label>
+      </div>
+      <div class="min-h-5 mt-1">
+        <small *ngIf="isRequired('email')" class="text-red-400">Este campo es requerido</small>
+        <small *ngIf="isEmailError()" class="text-red-400">El correo debe ser valido</small>
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="password"
+          formControlName="password"
+          id="password"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="password"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          Contraseña
+        </label>
+      </div>
+      <div class="min-h-5 mt-1">
+        <small *ngIf="isRequired('password')" class="text-red-400">Este campo es requerido</small>
+      </div>
+    </div>
+
+    <!-- Submit button -->
+    <button
+      type="submit"
+      class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+      Crear Cuenta
+    </button>
+
+    <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400">
+      ¿Ya tienes una cuenta?
+      <a routerLink="/auth/login" class="font-medium text-green-600 hover:underline dark:text-green-500">Iniciar Sesión</a>
+    </p>
+
+    <!-- Mensajes de error y éxito -->
+    <div *ngIf="errorMessage" class="text-red-600 font-medium">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="text-green-600 font-medium">
+      {{ successMessage }}
+    </div>
+  </form>
+</div>

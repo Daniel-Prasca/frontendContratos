@@ -1,0 +1,91 @@
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+  <div class="max-w-5xl mx-auto bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
+      Lista de Proveedores
+    </h1>
+      <!-- Botón Crear Proveedor -->
+    <div class="flex justify-end mb-4">
+      <button (click)="irACrearProveedor()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-md">
+        Crear Proveedor
+      </button>
+    </div>
+    
+    <!-- Mensajes -->
+    <div *ngIf="successMessage" class="text-green-600 font-medium mb-2">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="text-red-600 font-medium mb-2">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Tabla -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse rounded-lg shadow-sm">
+        <thead class= "text-white">
+          <tr>
+            <th class="p-3 text-left">NIT</th>
+            <th class="p-3 text-left">Nombre</th>
+            <th class="p-3 text-left">Representante Legal</th>
+            <th class="p-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let proveedor of proveedores; let i = index" class="border-b">
+            <!-- NIT -->
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewNIT">
+                <input [(ngModel)]="proveedor.nit"
+                       class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewNIT>{{ proveedor.nit }}</ng-template>
+            </td>
+
+            <!-- Nombre -->
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewNombre">
+                <input [(ngModel)]="proveedor.nombre"
+                       class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewNombre>{{ proveedor.nombre }}</ng-template>
+            </td>
+
+            <!-- Representante Legal -->
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewRep">
+                <input [(ngModel)]="proveedor.representanteLegal"
+                       class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewRep>{{ proveedor.representanteLegal }}</ng-template>
+            </td>
+
+            <!-- Botones -->
+            <td class="p-3 text-center">
+              <ng-container *ngIf="editIndex === i; else normalButtons">
+                <button (click)="guardarEdicion(proveedor, i)"
+                        class="bg-green-600 text-white px-3 py-1 rounded mr-2">
+                  Guardar
+                </button>
+                <button (click)="cancelarEdicion()"
+                        class="bg-gray-400 text-white px-3 py-1 rounded">
+                  Cancelar
+                </button>
+              </ng-container>
+
+              <ng-template #normalButtons>
+                <button (click)="editarProveedor(i)"
+                        class="bg-blue-600 text-white px-3 py-1 rounded mr-2">
+                  Editar
+                </button>
+                <button (click)="eliminarProveedor(proveedor.id)"
+                        class="bg-red-600 text-white px-3 py-1 rounded">
+                  Eliminar
+                </button>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

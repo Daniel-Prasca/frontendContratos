@@ -1,0 +1,91 @@
+<section class="bg-gray-50 dark:bg-gray-900">
+    <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <div class="flex items-center flex-col gap-y-4">
+    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+      Registrar Proveedor
+    </h1>
+  </div>
+
+  <form [formGroup]="form" class="space-y-4 md:space-y-6" (ngSubmit)="guardarProveedor()">
+    <!-- NIT -->
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="text"
+          formControlName="nit"
+          id="nit"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="nit"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          NIT
+        </label>
+      </div>
+      <div class="min-h-5 mt-1">
+        <small *ngIf="isRequired('nit')" class="text-red-400">Este campo es requerido</small>
+      </div>
+    </div>
+
+    <!-- Nombre -->
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="text"
+          formControlName="nombre"
+          id="nombre"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="nombre"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          Nombre
+        </label>
+      </div>
+      <div class="min-h-5 mt-1">
+        <small *ngIf="isRequired('nombre')" class="text-red-400">Este campo es requerido</small>
+      </div>
+    </div>
+
+    <!-- Representante Legal -->
+    <div class="h-14">
+      <div class="relative">
+        <input
+          type="text"
+          formControlName="representanteLegal"
+          id="representanteLegal"
+          class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+          placeholder=" " />
+        <label
+          for="representanteLegal"
+          class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1">
+          Representante Legal
+        </label>
+      </div>
+      <div class="min-h-5 mt-1">
+        <small *ngIf="isRequired('representanteLegal')" class="text-red-400">Este campo es requerido</small>
+      </div>
+    </div>
+
+    <!-- Botón -->
+    <button
+      type="submit"
+      class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+      Guardar Proveedor
+    </button>
+
+    <!-- Mensajes -->
+    <div *ngIf="errorMessage" class="text-red-600 font-medium">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="text-green-600 font-medium">
+      {{ successMessage }}
+    </div>
+  </form>
+</div>
+
+        </div>
+    </div>
+  </section>
