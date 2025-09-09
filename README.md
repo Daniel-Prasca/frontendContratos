@@ -1,59 +1,64 @@
-# FrontendContratos
+# Gestión de contratos desarrollado por Daniel Prasca *frontend*
+_Sistema desarrollado por Daniel Prasca
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.2.
+<div align="center">
 
-## Development server
+## Comenzando... 🚀
+</div>
 
-To start a local development server, run:
+<p align="center">
+<a href="https://angular.dev"><img src="https://imgs.search.brave.com/Xkj8HMVUoD9qKnH36MGpNEiLymxzP-sNmIj9bB7M6t0/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9zZWVr/bG9nby5jb20vaW1h/Z2VzL0EvYW5ndWxh/ci1sb2dvLTcwQkJF/MjIwQ0Itc2Vla2xv/Z28uY29tLnBuZw" width="400" alt="Angular Logo" /></a>
+</p>
 
-```bash
-ng serve
+### Pre-requisitos 📋
+
+_Para poder inicializar el sistema se requiere lo siguiente :_
+
+```
+1. Git.
+2. Docker.
+3. Angular (Standalone Components).
+4. VsCode (Editor de Codigo).
+5. TypeScript & JavaScript.
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Code scaffolding
+> [!WARNING]
+> Para manejar este propyecto debes tener instalado Docker y GitHub en tu PC
+> Instalación de Git
+> [Descargar Git](https://git-scm.com/downloads)
+>**Docker**  
+> Para levantar los contenedores del backend.  
+>[Descargar Docker](https://www.docker.com/get-started/)
+> ````
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Clonar el Repositorio 🔧
 
-```bash
-ng generate component component-name
 ```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
+git clone https://github.com/Daniel-Prasca/frontendContratos.git
 ```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
 ```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+cd frontend-contratos
 ```
+### Correr la App 🚀
+> [!NOTE]
+> Este comando genera las imagenes del frontend
+> ```sh
+> docker build -t angular-frontend .
+> ````
+> Ejecutar el contenedor:
+> ```sh
+> docker run -p 4200:80 angular-frontend:latest
+> ```
+> Luego abre en el navegador: http://localhost:4200
 
-## Running end-to-end tests
 
-For end-to-end (e2e) testing, run:
+> [!IMPORTANT]
+> Revisa que no tengas ningún servicio corriendo en este puerto
+> una vez creadas las imagenes y ejecutadas, tendrás listo el frontend 
 
-```bash
-ng e2e
-```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Autor ✒️
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **Daniel Prasca**
+>>>>>>> 221bfa19387c5be82c490d3215d09eeb5ed8d404
