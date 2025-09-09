@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { LiquidacionDto, LiquidacionCreateDto, LiquidacionUpdateDto } from '../../../core/interfaces/liquidacion';
+import { environment } from '../../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LiquidacionService {
-  private baseURL = 'https://localhost:7178/api/liquidaciones';
-
+  private baseURL = environment.apiUrl + '/liquidaciones';
   constructor(private httpClient: HttpClient, private authService: AuthService) {}
 
   private getHeaders(withAuth = true): HttpHeaders {

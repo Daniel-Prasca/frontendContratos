@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, switchMap, of } from 'rxjs';
 import { UserDto, UserLoginDto, UserRegisterDto } from '../../core/interfaces/auth.models';
+import { environment } from '../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthStateService {
-  private apiUrl = 'https://localhost:7178/api/auth';
+     private baseURL = environment.apiUrl;
 
   private userSubject = new BehaviorSubject<UserDto | null>(this.getStoredUser());
   public user$ = this.userSubject.asObservable();

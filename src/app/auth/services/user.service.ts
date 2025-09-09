@@ -3,11 +3,12 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserDto, UserRegisterDto, UserUpdateDto } from '../../core/interfaces/auth.models';
 import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environments';
 @Injectable({
   providedIn: 'root'
 })
 export class UserAuthService {
-  private baseURL = "https://localhost:7178/api/users";
+  private baseURL = environment.apiUrl + '/users';
   constructor(
     private httpClient: HttpClient,
     private AuthService: AuthService

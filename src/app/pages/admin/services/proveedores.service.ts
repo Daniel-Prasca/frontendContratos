@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { ProveedorDto, ProveedorCreateDto, ProveedorUpdateDto } from '../../../core/interfaces/proveedor';
 import { AuthService } from '../../../auth/services/auth.service';
 import { UserAuthService } from '../../../auth/services/user.service';
+import { environment } from '../../../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProveedorService {
-  private baseURL = "https://localhost:7178/api/proveedores";
+  private baseURL = environment.apiUrl + '/proveedores';
 
   constructor(
     private httpClient: HttpClient,

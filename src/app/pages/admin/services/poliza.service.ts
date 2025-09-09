@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PolizaDto, PolizaCreateDto, PolizaUpdateDto } from '../../../core/interfaces/poliza';
+import { environment } from '../../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PolizaService {
-  private baseURL = 'https://localhost:7178/api/polizas';
+  private baseURL = environment.apiUrl + '/polizas';
 
   constructor(private httpClient: HttpClient, private authService: AuthService) {}
 

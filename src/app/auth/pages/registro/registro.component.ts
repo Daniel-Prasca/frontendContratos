@@ -4,11 +4,11 @@ import { ReactiveFormsModule, Validators, FormBuilder, FormGroup } from '@angula
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { UserRegisterDto } from '../../../core/interfaces/auth.models';
-
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-registro',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './registro.component.html',
 })
 export default class RegistroComponent {

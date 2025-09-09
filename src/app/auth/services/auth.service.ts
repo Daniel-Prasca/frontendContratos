@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+
 import {
   UserDto,
   UserLoginDto,
@@ -8,12 +9,13 @@ import {
   AuthResponse,
 } from '../../core/interfaces/auth.models';
 import { AuthStateService } from '../../shared/services/auth-state.service';
+import { environment } from '../../../environments/environments';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = 'https://localhost:7178/api';
+  private baseUrl = environment.apiUrl;
 
   private loggedInSubject = new BehaviorSubject<boolean>(this.isLoggedIn());
   public loggedIn$ = this.loggedInSubject.asObservable();
@@ -32,7 +34,7 @@ export class AuthService {
   }
 
   login(credentials: UserLoginDto): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
+    return this.http.post<AuthResponse>(`${this.baseUrl}/auth/login`, credentials).pipe(
       tap((response) => {
         this.setToken(response.token);
         this.setUser(response.user);
@@ -45,7 +47,7 @@ export class AuthService {
   }
 
   register(data: UserRegisterDto): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/register`, data);
+    return this.http.post(`${this.baseUrl}/auth/register`, data);
   }
 
   logout(): void {

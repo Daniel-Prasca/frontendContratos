@@ -4,12 +4,13 @@ import { Observable } from 'rxjs';
 import { AuthService } from '../../../auth/services/auth.service';
 import { ServicioDto, ServicioCreateDto, ServicioUpdateDto } from '../../../core/interfaces/servicio';
 import { UserAuthService } from '../../../auth/services/user.service';
+import { environment } from '../../../../environments/environments';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ServicioService {
-  private baseURL = "https://localhost:7178/api/servicios";
+  private baseURL = environment.apiUrl + '/servicios';
 
   constructor(
     private httpClient: HttpClient,
