@@ -55,7 +55,17 @@ cd frontend-contratos
 
 > [!IMPORTANT]
 > Revisa que no tengas ningún servicio corriendo en este puerto
-> una vez creadas las imagenes y ejecutadas, tendrás listo el frontend 
+> una vez creadas las imagenes y ejecutadas, tendrás listo el frontend
+> Para loguearte tienes dos usuarios precargados:
+> *Role Admin*
+> ```sh
+> admin@contratos.com
+> 12345
+> ```
+> *Rol User*
+> ```sh
+> usuario@contratos.com
+> 12345
 
 
 ## Autor ✒️
