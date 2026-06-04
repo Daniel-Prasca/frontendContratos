@@ -1,0 +1,110 @@
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 max-w-md">
+    <div class="w-full bg-white rounded-lg shadow dark:border md:p-8 dark:bg-gray-800 dark:border-gray-700">
+      <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center mb-6">Registrar Contrato</h1>
+
+      <form [formGroup]="form" class="space-y-4" (ngSubmit)="guardarContrato()">
+        <!-- Proveedor Select -->
+        <div class="h-14 relative">
+          <select
+                formControlName="proveedorId"
+                id="proveedorId"
+                class="
+                    block w-full rounded border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-gray-900
+                    appearance-none
+                    dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100
+                    focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent
+                "
+                >
+                <option value="" disabled selected>Seleccione un proveedor</option>
+                <option *ngFor="let proveedor of proveedores" [value]="proveedor.id">
+                    {{ proveedor.nombre }}
+                </option>
+            </select>
+
+          <label
+            for="proveedorId"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Proveedor
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('proveedorId')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Objeto -->
+        <div class="h-14 relative">
+          <input
+            type="text"
+            formControlName="objeto"
+            id="objeto"
+            class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+            placeholder=" " />
+          <label
+            for="objeto"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Objeto
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('objeto')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Fecha Inicio -->
+        <div class="h-14 relative">
+          <input
+            type="date"
+            formControlName="fechaInicio"
+            id="fechaInicio"
+            class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+            placeholder=" " />
+          <label
+            for="fechaInicio"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Fecha Inicio
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('fechaInicio')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Fecha Fin -->
+        <div class="h-14 relative">
+          <input
+            type="date"
+            formControlName="fechaFin"
+            id="fechaFin"
+            class="block px-2.5 pb-2.5 pt-4 w-full text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-green-500 focus:outline-none focus:ring-0 focus:border-green-600 peer"
+            placeholder=" " />
+          <label
+            for="fechaFin"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Fecha Fin
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('fechaFin')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <button
+          type="submit"
+          class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+          Guardar Contrato
+        </button>
+
+        <!-- Mensajes -->
+        <div *ngIf="errorMessage" class="text-red-600 font-medium">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="text-green-600 font-medium">
+          {{ successMessage }}
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

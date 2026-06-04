@@ -1,0 +1,94 @@
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+  <div class="max-w-5xl mx-auto bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
+      Lista de Contratos
+    </h1>
+
+    <!-- Botón Crear Contrato -->
+    <div class="flex justify-end mb-4">
+      <button (click)="irACrearContrato()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-md">
+        Crear Contrato
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="successMessage" class="text-green-600 font-medium mb-2">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="text-red-600 font-medium mb-2">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Tabla -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse rounded-lg shadow-sm">
+        <thead class="text-white">
+          <tr>
+            <th class="p-3 text-left">Proveedor</th>
+            <th class="p-3 text-left">Objeto</th>
+            <th class="p-3 text-left">Fecha Inicio</th>
+            <th class="p-3 text-left">Fecha Fin</th>
+            <th class="p-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let contrato of contratos; let i = index" class="border-b">
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewProveedor">
+                <input [(ngModel)]="contrato.proveedorNombre"
+                       class="border rounded p-1 w-full" disabled />
+                <!-- Si quieres que proveedor sea editable usa un selector -->
+              </ng-container>
+              <ng-template #viewProveedor>{{ contrato.proveedorNombre }}</ng-template>
+            </td>
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewObjeto">
+                <input [(ngModel)]="contrato.objeto"
+                       class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewObjeto>{{ contrato.objeto }}</ng-template>
+            </td>
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewFechaInicio">
+                <input type="date" [(ngModel)]="contrato.fechaInicio"
+                       class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewFechaInicio>{{ contrato.fechaInicio | date:'shortDate' }}</ng-template>
+            </td>
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewFechaFin">
+                <input type="date" [(ngModel)]="contrato.fechaFin"
+                       class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewFechaFin>{{ contrato.fechaFin | date:'shortDate' }}</ng-template>
+            </td>
+            <td class="p-3 text-center">
+              <ng-container *ngIf="editIndex === i; else normalButtons">
+                <button (click)="guardarEdicion(contrato, i)"
+                        class="bg-green-600 text-white px-3 py-1 rounded mr-2">
+                  Guardar
+                </button>
+                <button (click)="cancelarEdicion()"
+                        class="bg-gray-400 text-white px-3 py-1 rounded">
+                  Cancelar
+                </button>
+              </ng-container>
+
+              <ng-template #normalButtons>
+                <button (click)="editarContrato(i)"
+                        class="bg-blue-600 text-white px-3 py-1 rounded mr-2">
+                  Editar
+                </button>
+                <button (click)="eliminarContrato(contrato.id)"
+                        class="bg-red-600 text-white px-3 py-1 rounded">
+                  Eliminar
+                </button>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

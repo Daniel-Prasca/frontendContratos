@@ -1,0 +1,88 @@
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+  <div class="max-w-5xl mx-auto bg-white/10 backdrop-blur-md rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">
+      Lista de Pólizas
+    </h1>
+    <!-- Botón Crear Poliza -->
+    <div class="flex justify-end mb-4">
+      <button (click)="irACrearPoliza()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow-md">
+        Crear Póliza
+      </button>
+    </div>
+
+    <!-- Mensajes -->
+    <div *ngIf="successMessage" class="text-green-600 font-medium mb-2">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="text-red-600 font-medium mb-2">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Tabla -->
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse rounded-lg shadow-sm">
+        <thead class="text-white bg-gray-800">
+          <tr>
+            <th class="p-3 text-left">Tipo</th>
+            <th class="p-3 text-left">Fecha Vencimiento</th>
+            <th class="p-3 text-left">Estado</th>
+            <th class="p-3 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let poliza of polizas; let i = index" class="border-b">
+            <!-- Tipo -->
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewTipo">
+                <input [(ngModel)]="poliza.tipo" class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewTipo>{{ poliza.tipo }}</ng-template>
+            </td>
+            <!-- Fecha Vencimiento -->
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewFecha">
+                <input type="date" [(ngModel)]="poliza.fechaVencimiento" class="border rounded p-1 w-full" />
+              </ng-container>
+              <ng-template #viewFecha>{{ poliza.fechaVencimiento | date:'yyyy-MM-dd' }}</ng-template>
+            </td>
+            <!-- Estado -->
+            <td class="p-3">
+              <ng-container *ngIf="editIndex === i; else viewEstado">
+                <select [(ngModel)]="poliza.estado" class="border rounded p-1 w-full">
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Vigente">Vigente</option>
+                  <option value="Vencida">Vencida</option>
+                </select>
+              </ng-container>
+              <ng-template #viewEstado>{{ poliza.estado }}</ng-template>
+            </td>
+            <!-- Botones -->
+            <td class="p-3 text-center">
+              <ng-container *ngIf="editIndex === i; else normalButtons">
+                <button (click)="guardarEdicion(poliza, i)"
+                        class="bg-green-600 text-white px-3 py-1 rounded mr-2">
+                  Guardar
+                </button>
+                <button (click)="cancelarEdicion()"
+                        class="bg-gray-400 text-white px-3 py-1 rounded">
+                  Cancelar
+                </button>
+              </ng-container>
+              <ng-template #normalButtons>
+                <button (click)="editarPoliza(i)"
+                        class="bg-blue-600 text-white px-3 py-1 rounded mr-2">
+                  Editar
+                </button>
+                <button (click)="eliminarPoliza(poliza.id)"
+                        class="bg-red-600 text-white px-3 py-1 rounded">
+                  Eliminar
+                </button>
+              </ng-template>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

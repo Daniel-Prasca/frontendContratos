@@ -1,0 +1,110 @@
+<section class="bg-gray-50 dark:bg-gray-900 min-h-screen p-6">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 max-w-md">
+    <div class="w-full bg-white rounded-lg shadow dark:border md:p-8 dark:bg-gray-800 dark:border-gray-700">
+      <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white text-center mb-6">
+        Registrar Póliza
+      </h1>
+
+      <form [formGroup]="form" class="space-y-4 md:space-y-6" (ngSubmit)="guardarPoliza()">
+        <!-- Contrato Select -->
+        <div class="h-14 relative">
+          <select
+            formControlName="contratoId"
+            id="contratoId"
+            class="block w-full rounded border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-gray-900 appearance-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent peer"
+          >
+            <option value="" disabled selected>Seleccione un contrato</option>
+            <option *ngFor="let contrato of contratos" [value]="contrato.id">
+              {{ contrato.objeto }}
+            </option>
+          </select>
+          <label
+            for="contratoId"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Contrato
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('contratoId')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Tipo -->
+        <div class="h-14 relative">
+          <input
+            type="text"
+            formControlName="tipo"
+            id="tipo"
+            class="block w-full rounded border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-gray-900 appearance-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent peer"
+            placeholder=" "
+          />
+          <label
+            for="tipo"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Tipo
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('tipo')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Fecha Vencimiento -->
+        <div class="h-14 relative">
+          <input
+            type="date"
+            formControlName="fechaVencimiento"
+            id="fechaVencimiento"
+            class="block w-full rounded border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-gray-900 appearance-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent peer"
+            placeholder=" "
+          />
+          <label
+            for="fechaVencimiento"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Fecha Vencimiento
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('fechaVencimiento')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="h-14 relative">
+          <input
+            type="text"
+            formControlName="estado"
+            id="estado"
+            class="block w-full rounded border border-gray-300 bg-transparent px-2.5 pb-2.5 pt-4 text-gray-900 appearance-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent peer"
+            placeholder=" "
+          />
+          <label
+            for="estado"
+            class="absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white dark:bg-gray-800 px-2 peer-focus:px-2 peer-focus:text-green-600 peer-focus:dark:text-green-500"
+          >
+            Estado
+          </label>
+          <div class="min-h-5 mt-1">
+            <small *ngIf="isRequired('estado')" class="text-red-400">Este campo es requerido</small>
+          </div>
+        </div>
+
+        <!-- Botón -->
+        <button
+          type="submit"
+          class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        >
+          Guardar Póliza
+        </button>
+
+        <!-- Mensajes -->
+        <div *ngIf="errorMessage" class="text-red-600 font-medium mt-2">
+          {{ errorMessage }}
+        </div>
+        <div *ngIf="successMessage" class="text-green-600 font-medium mt-2">
+          {{ successMessage }}
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
