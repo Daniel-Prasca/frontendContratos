@@ -1,0 +1,107 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  nodeVersion: '20.x'
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 1 — Pruebas Unitarias e Integración (Karma + Jasmine)
+# No necesita backend. Siempre corre al hacer push a main.
+# ─────────────────────────────────────────────────────────────
+stages:
+
+- stage: PruebasUnitariasIntegracion
+  displayName: '1 · Unitarias + Integración (107 specs)'
+
+  jobs:
+  - job: Karma
+    displayName: 'Karma + Jasmine — ChromeHeadless'
+
+    steps:
+
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: $(nodeVersion)
+
+    - script: npm ci
+      displayName: 'Instalar dependencias (npm ci)'
+
+    - script: |
+        npx ng test \
+          --watch=false \
+          --browsers=ChromeHeadless \
+          --code-coverage
+      displayName: 'Correr pruebas unitarias e integración'
+
+    - task: PublishCodeCoverageResults@2
+      displayName: 'Publicar reporte de cobertura'
+      condition: succeededOrFailed()
+      inputs:
+        summaryFileLocation: 'coverage/frontend-contratos/cobertura-coverage.xml'
+        pathToSources: 'src'
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 2 — Pruebas E2E (Cypress headless)
+# Requiere el backend corriendo en http://localhost:8080
+# Solo corre si el Stage 1 pasó.
+# ─────────────────────────────────────────────────────────────
+- stage: PruebasE2E
+  displayName: '2 · E2E — Cypress headless'
+  dependsOn: PruebasUnitariasIntegracion
+  condition: succeeded()
+
+  jobs:
+  - job: Cypress
+    displayName: 'Cypress — Chrome headless'
+
+    steps:
+
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: $(nodeVersion)
+
+    - script: npm ci
+      displayName: 'Instalar dependencias'
+
+    - script: |
+        sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev \
+          libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+      displayName: 'Instalar dependencias de Chrome en Linux'
+
+    - script: npx ng build --configuration development
+      displayName: 'Build del frontend (modo desarrollo)'
+
+    - script: |
+        npm install -g http-server
+        nohup http-server dist/frontend-contratos/browser -p 4200 --silent &
+        npx wait-on http://localhost:4200 --timeout 60000
+        echo "Frontend disponible en http://localhost:4200"
+      displayName: 'Servir frontend en :4200'
+
+    - script: |
+        npx cypress run \
+          --headless \
+          --browser chrome \
+          --reporter junit \
+          --reporter-options "mochaFile=cypress/results/results-[hash].xml"
+      displayName: 'Correr Cypress E2E'
+      env:
+        CYPRESS_BASE_URL: 'http://localhost:4200'
+
+    - task: PublishTestResults@2
+      displayName: 'Publicar resultados E2E'
+      condition: always()
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: 'cypress/results/*.xml'
+        mergeTestResults: true
+        testRunTitle: 'Cypress E2E'
