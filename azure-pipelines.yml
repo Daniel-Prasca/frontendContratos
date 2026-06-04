@@ -17,7 +17,7 @@ resources:
   repositories:
     - repository: backend
       type: git
-      name: BackendContratos
+      name: BackendContratos/BackendContratos   # Proyecto/Repo
       ref: refs/heads/main
 
 # ─────────────────────────────────────────────────────────────
