@@ -10,6 +10,15 @@ pool:
 
 variables:
   nodeVersion: '20.x'
+  dotnetVersion: '8.0.x'
+
+# Referencia al repositorio del backend (mismo proyecto Azure DevOps)
+resources:
+  repositories:
+    - repository: backend
+      type: git
+      name: BackendContratos
+      ref: refs/heads/main
 
 # ─────────────────────────────────────────────────────────────
 # STAGE 1 — Pruebas Unitarias e Integración (Karma + Jasmine)
@@ -25,6 +34,8 @@ stages:
     displayName: 'Karma + Jasmine — ChromeHeadless'
 
     steps:
+
+    - checkout: self
 
     - task: NodeTool@0
       displayName: 'Instalar Node.js $(nodeVersion)'
@@ -50,7 +61,8 @@ stages:
 
 # ─────────────────────────────────────────────────────────────
 # STAGE 2 — Pruebas E2E (Cypress headless)
-# Requiere el backend corriendo en http://localhost:8080
+# Clona el back, lo arranca en modo Testing (BD en memoria,
+# sin SQL Server) y corre Cypress contra los dos servicios.
 # Solo corre si el Stage 1 pasó.
 # ─────────────────────────────────────────────────────────────
 - stage: PruebasE2E
@@ -60,33 +72,74 @@ stages:
 
   jobs:
   - job: Cypress
-    displayName: 'Cypress — Chrome headless'
+    displayName: 'Backend InMemory + Frontend + Cypress'
 
     steps:
 
+    # ── Clonar ambos repos ───────────────────────────────────
+    - checkout: self
+      path: front
+
+    - checkout: backend
+      path: back
+      displayName: 'Clonar repositorio del backend'
+
+    # ── Arrancar el backend (.NET 8, BD en memoria) ──────────
+    - task: UseDotNet@2
+      displayName: 'Instalar .NET $(dotnetVersion)'
+      inputs:
+        packageType: sdk
+        version: $(dotnetVersion)
+
+    - script: |
+        cd $(Pipeline.Workspace)/back/BackendContratos
+        dotnet restore
+        dotnet build --no-restore -c Release
+        nohup dotnet run --no-build -c Release \
+          --urls "http://localhost:8080" &
+        echo "Backend arrancando en :8080 con BD en memoria..."
+      displayName: 'Build y arrancar backend (InMemory + seed users)'
+      env:
+        ASPNETCORE_ENVIRONMENT: Testing
+
+    # ── Instalar Node y dependencias del front ───────────────
     - task: NodeTool@0
       displayName: 'Instalar Node.js $(nodeVersion)'
       inputs:
         versionSpec: $(nodeVersion)
 
     - script: npm ci
-      displayName: 'Instalar dependencias'
+      displayName: 'Instalar dependencias del frontend'
+      workingDirectory: $(Pipeline.Workspace)/front
 
+    # ── Dependencias de Chrome en Linux ─────────────────────
     - script: |
         sudo apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev \
           libnotify-dev libnss3 libxss1 libasound2 libxtst6 xauth xvfb
-      displayName: 'Instalar dependencias de Chrome en Linux'
+      displayName: 'Instalar librerías de Chrome'
 
+    # ── Build y servir el frontend ───────────────────────────
     - script: npx ng build --configuration development
-      displayName: 'Build del frontend (modo desarrollo)'
+      displayName: 'Build del frontend'
+      workingDirectory: $(Pipeline.Workspace)/front
 
     - script: |
         npm install -g http-server
         nohup http-server dist/frontend-contratos/browser -p 4200 --silent &
-        npx wait-on http://localhost:4200 --timeout 60000
-        echo "Frontend disponible en http://localhost:4200"
       displayName: 'Servir frontend en :4200'
+      workingDirectory: $(Pipeline.Workspace)/front
 
+    # ── Esperar a que ambos servicios estén listos ───────────
+    - script: |
+        npx wait-on \
+          http://localhost:4200 \
+          http://localhost:8080/api/auth/login \
+          --timeout 90000
+        echo "Backend (:8080) y frontend (:4200) listos"
+      displayName: 'Esperar backend y frontend'
+      workingDirectory: $(Pipeline.Workspace)/front
+
+    # ── Cypress ──────────────────────────────────────────────
     - script: |
         npx cypress run \
           --headless \
@@ -94,6 +147,7 @@ stages:
           --reporter junit \
           --reporter-options "mochaFile=cypress/results/results-[hash].xml"
       displayName: 'Correr Cypress E2E'
+      workingDirectory: $(Pipeline.Workspace)/front
       env:
         CYPRESS_BASE_URL: 'http://localhost:4200'
 
@@ -102,6 +156,6 @@ stages:
       condition: always()
       inputs:
         testResultsFormat: 'JUnit'
-        testResultsFiles: 'cypress/results/*.xml'
+        testResultsFiles: '$(Pipeline.Workspace)/front/cypress/results/*.xml'
         mergeTestResults: true
         testRunTitle: 'Cypress E2E'
