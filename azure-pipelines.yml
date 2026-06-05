@@ -203,13 +203,8 @@ stages:
     - script: npm ci
       displayName: 'Instalar dependencias + aplicar patch de Karma'
 
-    - script: |
-        npx stryker run \
-          --browsers ChromeHeadlessNoSandbox \
-          --logLevel info
+    - script: npx stryker run --logLevel info
       displayName: 'Ejecutar pruebas de mutación (Stryker)'
-      env:
-        CHROME_FLAGS: '--no-sandbox --headless --disable-gpu --disable-dev-shm-usage'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Publicar reporte HTML de mutación'
