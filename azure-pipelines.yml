@@ -49,14 +49,6 @@ stages:
         npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
       displayName: 'Correr pruebas unitarias e integración'
 
-    - script: |
-        echo "=== Archivos en coverage/ ==="
-        ls coverage/frontend-contratos/ || echo "No existe coverage/frontend-contratos/"
-        echo "=== Verificando cobertura.xml ==="
-        head -5 coverage/frontend-contratos/cobertura.xml || echo "No se generó cobertura.xml"
-      displayName: 'Verificar archivos de cobertura'
-      condition: succeededOrFailed()
-
     - task: PublishCodeCoverageResults@2
       displayName: 'Publicar cobertura en Azure DevOps'
       condition: succeededOrFailed()
