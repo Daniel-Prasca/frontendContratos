@@ -1,0 +1,18 @@
+diff --git a/node_modules/karma/lib/reporters/multi.js b/node_modules/karma/lib/reporters/multi.js
+index 482b1a4..cf30eee 100644
+--- a/node_modules/karma/lib/reporters/multi.js
++++ b/node_modules/karma/lib/reporters/multi.js
+@@ -8,11 +8,11 @@ class MultiReporter {
+   }
+ 
+   addAdapter (adapter) {
+-    this._reporters.forEach((reporter) => reporter.adapters.push(adapter))
++    this._reporters.forEach((reporter) => reporter.adapters && reporter.adapters.push(adapter))
+   }
+ 
+   removeAdapter (adapter) {
+-    this._reporters.forEach((reporter) => helper.arrayRemove(reporter.adapters, adapter))
++    this._reporters.forEach((reporter) => reporter.adapters && helper.arrayRemove(reporter.adapters, adapter))
+   }
+ }
+ 

@@ -40,3 +40,13 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Stryker
+/stryker-tmp
+/stryker.log
+
+# Lighthouse CI
+/.lighthouseci
+
+# Test reports (generados en tiempo de ejecución)
+/reports

@@ -27,7 +27,7 @@ resources:
 stages:
 
 - stage: PruebasUnitariasIntegracion
-  displayName: '1 · Unitarias + Integración (107 specs)'
+  displayName: '1 · Unitarias + Integración + Componentes (211 specs)'
 
   jobs:
   - job: Karma
@@ -174,3 +174,90 @@ stages:
         testResultsFiles: '$(Pipeline.Workspace)/front/cypress/results/*.xml'
         mergeTestResults: true
         testRunTitle: 'Cypress E2E'
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 3 — Pruebas de Mutación (Stryker)
+# Mide la calidad de los tests matando mutantes del código.
+# No necesita backend. Corre después del Stage 1 (tests base).
+# break: null → no falla el pipeline, solo reporta el score.
+# ─────────────────────────────────────────────────────────────
+- stage: PruebasMutacion
+  displayName: '3 · Mutación — Stryker'
+  dependsOn: PruebasUnitariasIntegracion
+  condition: succeeded()
+
+  jobs:
+  - job: Stryker
+    displayName: 'Stryker Mutator — ChromeHeadless'
+    timeoutInMinutes: 60
+
+    steps:
+
+    - checkout: self
+
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: $(nodeVersion)
+
+    - script: npm ci
+      displayName: 'Instalar dependencias + aplicar patch de Karma'
+
+    - script: |
+        npx stryker run \
+          --browsers ChromeHeadlessNoSandbox \
+          --logLevel info
+      displayName: 'Ejecutar pruebas de mutación (Stryker)'
+      env:
+        CHROME_FLAGS: '--no-sandbox --headless --disable-gpu --disable-dev-shm-usage'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar reporte HTML de mutación'
+      condition: always()
+      inputs:
+        pathToPublish: 'reports/mutation'
+        artifactName: 'mutation-report'
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 4 — Pruebas de Rendimiento (Lighthouse CI)
+# Mide Performance, Accesibilidad, Best Practices y SEO.
+# No necesita backend. Corre en paralelo con Stage 2 y 3.
+# continueOnError: true → nunca bloquea el pipeline.
+# ─────────────────────────────────────────────────────────────
+- stage: PruebasRendimiento
+  displayName: '4 · Rendimiento — Lighthouse CI'
+  dependsOn: PruebasUnitariasIntegracion
+  condition: succeeded()
+
+  jobs:
+  - job: Lighthouse
+    displayName: 'Lighthouse CI — login + registro'
+    timeoutInMinutes: 20
+    continueOnError: true
+
+    steps:
+
+    - checkout: self
+
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: $(nodeVersion)
+
+    - script: npm ci
+      displayName: 'Instalar dependencias'
+
+    - script: npx ng build
+      displayName: 'Build de producción (ng build)'
+
+    - script: npx lhci autorun
+      displayName: 'Ejecutar Lighthouse CI'
+      env:
+        CHROME_FLAGS: '--no-sandbox --headless --disable-gpu --disable-dev-shm-usage'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar reportes de rendimiento'
+      condition: always()
+      inputs:
+        pathToPublish: 'reports/lighthouse'
+        artifactName: 'lighthouse-report'
