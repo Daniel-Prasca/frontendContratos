@@ -126,7 +126,7 @@ stages:
 
     - script: |
         npm install -g http-server
-        nohup http-server dist/frontend-contratos/browser -p 4200 --silent &
+        nohup http-server dist/frontend-contratos/browser -p 4200 --spa --silent &
       displayName: 'Servir frontend en :4200'
       workingDirectory: $(Pipeline.Workspace)/front
 
