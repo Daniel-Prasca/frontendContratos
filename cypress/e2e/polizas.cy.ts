@@ -1,4 +1,29 @@
+const API = 'http://localhost:8080/api';
+
 describe('Flujo de Pólizas - Admin', () => {
+
+  // Crea proveedor + contrato en la BD InMemory antes de los tests
+  before(() => {
+    cy.request('POST', `${API}/auth/login`, {
+      email: 'admin@contratos.com',
+      password: '12345',
+    }).then((login) => {
+      const headers = { Authorization: `Bearer ${login.body.token}` };
+
+      cy.request({
+        method: 'POST', url: `${API}/proveedores`, headers,
+        body: { nit: '900200300-2', nombre: 'Proveedor Poliza', representanteLegal: 'Legal Test' },
+        failOnStatusCode: false,
+      }).then((prov) => {
+        cy.request({
+          method: 'POST', url: `${API}/contratos`, headers,
+          body: { proveedorId: prov.body.id, objeto: 'Contrato Para Poliza', fechaInicio: '2025-01-01', fechaFin: '2025-12-31' },
+          failOnStatusCode: false,
+        });
+      });
+    });
+  });
+
   beforeEach(() => {
     cy.loginComoAdmin();
     cy.visit('/admin/polizas-list');
@@ -40,4 +65,5 @@ describe('Flujo de Pólizas - Admin', () => {
     cy.contains('Guardar').click();
     cy.url().should('include', '/polizas-list');
   });
+
 });
