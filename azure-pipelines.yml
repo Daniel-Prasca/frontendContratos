@@ -93,12 +93,19 @@ stages:
 
     - script: |
         cd $(Pipeline.Workspace)/back/BackendContratos
+        echo "=== Restaurando NuGet ==="
         dotnet restore
-        dotnet build --no-restore -c Release
-        nohup dotnet run --no-build -c Release \
-          --urls "http://localhost:8080" &
-        echo "Backend arrancando en :8080 con BD en memoria..."
-      displayName: 'Build y arrancar backend (InMemory + seed users)'
+        echo "=== Publicando backend ==="
+        dotnet publish -c Release -o /tmp/backend-out --no-restore
+        echo "=== Archivos generados ==="
+        ls /tmp/backend-out/*.dll | head -5
+        echo "=== Arrancando en :8080 ==="
+        ASPNETCORE_ENVIRONMENT=Testing \
+        nohup dotnet /tmp/backend-out/BackendContratos.dll \
+          --urls "http://localhost:8080" \
+          > /tmp/backend.log 2>&1 &
+        echo "Backend PID: $!"
+      displayName: 'Publicar y arrancar backend (InMemory DB)'
       env:
         ASPNETCORE_ENVIRONMENT: Testing
 
@@ -144,7 +151,7 @@ stages:
     # ── Esperar y validar ambos servicios ────────────────────
     - script: |
         echo "=== Esperando backend TCP :8080 ==="
-        npx wait-on tcp:localhost:8080 --timeout 90000
+        npx wait-on tcp:localhost:8080 --timeout 120000
         echo "=== Seed de usuarios (10s) ==="
         sleep 10
         echo "=== Verificando login ==="
