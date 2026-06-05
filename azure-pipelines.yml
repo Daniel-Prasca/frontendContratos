@@ -46,11 +46,16 @@ stages:
       displayName: 'Instalar dependencias (npm ci)'
 
     - script: |
-        npx ng test \
-          --watch=false \
-          --browsers=ChromeHeadless \
-          --code-coverage
+        npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
       displayName: 'Correr pruebas unitarias e integración'
+
+    - script: |
+        npm install -g lcov-to-cobertura-xml
+        lcov_cobertura coverage/frontend-contratos/lcov.info \
+          --output coverage/cobertura-coverage.xml
+        echo "Cobertura XML generado en coverage/cobertura-coverage.xml"
+      displayName: 'Convertir LCOV → Cobertura XML'
+      condition: succeededOrFailed()
 
     - task: PublishCodeCoverageResults@2
       displayName: 'Publicar reporte de cobertura'
