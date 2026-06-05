@@ -125,26 +125,43 @@ stages:
       workingDirectory: $(Pipeline.Workspace)/front
 
     - script: |
+        echo "=== Verificando directorio del build ==="
+        ls $(Pipeline.Workspace)/front/dist/ || echo "dist/ no existe"
+        ls $(Pipeline.Workspace)/front/dist/frontend-contratos/ || echo "No hay frontend-contratos/"
+        BUILD_DIR=$(Pipeline.Workspace)/front/dist/frontend-contratos/browser
+        if [ ! -d "$BUILD_DIR" ]; then
+          echo "ERROR: No existe $BUILD_DIR"
+          ls $(Pipeline.Workspace)/front/dist/frontend-contratos/
+          exit 1
+        fi
+        echo "Build OK en $BUILD_DIR"
         npm install -g http-server
-        nohup http-server dist/frontend-contratos/browser -p 4200 --spa --silent &
-      displayName: 'Servir frontend en :4200'
+        nohup http-server "$BUILD_DIR" -p 4200 --spa --silent &
+        echo "http-server PID: $!"
+      displayName: 'Verificar build y servir frontend en :4200'
       workingDirectory: $(Pipeline.Workspace)/front
 
-    # ── Esperar a que ambos servicios estén listos ───────────
+    # ── Esperar y validar ambos servicios ────────────────────
     - script: |
-        echo "Esperando backend en :8080..."
+        echo "=== Esperando backend TCP :8080 ==="
         npx wait-on tcp:localhost:8080 --timeout 90000
-        echo "Backend TCP listo — esperando seed de usuarios (5s)..."
-        sleep 5
-        echo "Esperando frontend en :4200..."
-        npx wait-on http://localhost:4200 --timeout 60000
-        echo "Todo listo. Verificando login con el back..."
-        curl -s -o /dev/null -w "%{http_code}" \
+        echo "=== Seed de usuarios (10s) ==="
+        sleep 10
+        echo "=== Verificando login ==="
+        STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
           -X POST http://localhost:8080/api/auth/login \
           -H "Content-Type: application/json" \
-          -d '{"email":"admin@contratos.com","password":"12345"}'
-        echo " ← código HTTP del login (debe ser 200)"
-      displayName: 'Esperar backend (TCP) + seed + frontend'
+          -d '{"email":"admin@contratos.com","password":"12345"}')
+        echo "HTTP login: $STATUS"
+        if [ "$STATUS" != "200" ]; then
+          echo "Login falló — mostrando log del backend:"
+          cat /tmp/backend.log || true
+          exit 1
+        fi
+        echo "=== Esperando frontend :4200 ==="
+        npx wait-on http://localhost:4200 --timeout 60000
+        echo "=== Ambos servicios listos ==="
+      displayName: 'Validar backend (login 200) + frontend'
       workingDirectory: $(Pipeline.Workspace)/front
 
     # ── Cypress ──────────────────────────────────────────────
