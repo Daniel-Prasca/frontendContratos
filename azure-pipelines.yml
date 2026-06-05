@@ -50,23 +50,18 @@ stages:
       displayName: 'Correr pruebas unitarias e integración'
 
     - script: |
-        echo "=== Archivos de cobertura generados ==="
-        ls coverage/frontend-contratos/ || echo "WARN: no existe coverage/frontend-contratos/"
-        echo "=== Convirtiendo LCOV a Cobertura XML ==="
-        pip3 install lcov_cobertura --quiet
-        python3 -m lcov_cobertura \
-          coverage/frontend-contratos/lcov.info \
-          --output coverage/cobertura.xml
-        echo "=== Primeras líneas del XML ==="
-        head -10 coverage/cobertura.xml
-      displayName: 'Convertir LCOV → Cobertura XML (Python)'
+        echo "=== Archivos en coverage/ ==="
+        ls coverage/frontend-contratos/ || echo "No existe coverage/frontend-contratos/"
+        echo "=== Verificando cobertura.xml ==="
+        head -5 coverage/frontend-contratos/cobertura.xml || echo "No se generó cobertura.xml"
+      displayName: 'Verificar archivos de cobertura'
       condition: succeededOrFailed()
 
     - task: PublishCodeCoverageResults@2
       displayName: 'Publicar cobertura en Azure DevOps'
       condition: succeededOrFailed()
       inputs:
-        summaryFileLocation: '$(Build.SourcesDirectory)/coverage/cobertura.xml'
+        summaryFileLocation: '$(Build.SourcesDirectory)/coverage/frontend-contratos/cobertura.xml'
         pathToSources: '$(Build.SourcesDirectory)/src'
 
 # ─────────────────────────────────────────────────────────────
