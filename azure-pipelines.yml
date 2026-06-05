@@ -56,7 +56,7 @@ stages:
       displayName: 'Publicar reporte de cobertura'
       condition: succeededOrFailed()
       inputs:
-        summaryFileLocation: 'coverage/frontend-contratos/cobertura-coverage.xml'
+        summaryFileLocation: 'coverage/cobertura-coverage.xml'
         pathToSources: 'src'
 
 # ─────────────────────────────────────────────────────────────
