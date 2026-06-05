@@ -132,12 +132,19 @@ stages:
 
     # ── Esperar a que ambos servicios estén listos ───────────
     - script: |
-        npx wait-on \
-          http://localhost:4200 \
-          http://localhost:8080/api/auth/login \
-          --timeout 90000
-        echo "Backend (:8080) y frontend (:4200) listos"
-      displayName: 'Esperar backend y frontend'
+        echo "Esperando backend en :8080..."
+        npx wait-on tcp:localhost:8080 --timeout 90000
+        echo "Backend TCP listo — esperando seed de usuarios (5s)..."
+        sleep 5
+        echo "Esperando frontend en :4200..."
+        npx wait-on http://localhost:4200 --timeout 60000
+        echo "Todo listo. Verificando login con el back..."
+        curl -s -o /dev/null -w "%{http_code}" \
+          -X POST http://localhost:8080/api/auth/login \
+          -H "Content-Type: application/json" \
+          -d '{"email":"admin@contratos.com","password":"12345"}'
+        echo " ← código HTTP del login (debe ser 200)"
+      displayName: 'Esperar backend (TCP) + seed + frontend'
       workingDirectory: $(Pipeline.Workspace)/front
 
     # ── Cypress ──────────────────────────────────────────────
