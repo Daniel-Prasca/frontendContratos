@@ -127,25 +127,11 @@ stages:
       displayName: 'Instalar librerías de Chrome'
 
     # ── Build y servir el frontend ───────────────────────────
-    - script: npx ng build --configuration development
-      displayName: 'Build del frontend'
-      workingDirectory: $(Pipeline.Workspace)/front
-
     - script: |
-        echo "=== Verificando directorio del build ==="
-        ls $(Pipeline.Workspace)/front/dist/ || echo "dist/ no existe"
-        ls $(Pipeline.Workspace)/front/dist/frontend-contratos/ || echo "No hay frontend-contratos/"
-        BUILD_DIR=$(Pipeline.Workspace)/front/dist/frontend-contratos/browser
-        if [ ! -d "$BUILD_DIR" ]; then
-          echo "ERROR: No existe $BUILD_DIR"
-          ls $(Pipeline.Workspace)/front/dist/frontend-contratos/
-          exit 1
-        fi
-        echo "Build OK en $BUILD_DIR"
-        npm install -g http-server
-        nohup http-server "$BUILD_DIR" -p 4200 --spa --silent &
-        echo "http-server PID: $!"
-      displayName: 'Verificar build y servir frontend en :4200'
+        nohup npx ng serve --port 4200 --host localhost \
+          > /tmp/frontend.log 2>&1 &
+        echo "ng serve PID: $!"
+      displayName: 'Arrancar frontend con ng serve en :4200'
       workingDirectory: $(Pipeline.Workspace)/front
 
     # ── Esperar y validar ambos servicios ────────────────────
