@@ -20,18 +20,19 @@ resources:
       name: BackendContratos/BackendContratos   # Proyecto/Repo
       ref: refs/heads/main
 
-# ─────────────────────────────────────────────────────────────
-# STAGE 1 — Pruebas Unitarias e Integración (Karma + Jasmine)
-# No necesita backend. Siempre corre al hacer push a main.
-# ─────────────────────────────────────────────────────────────
 stages:
 
-- stage: PruebasUnitariasIntegracion
-  displayName: '1 · Unitarias + Integración + Componentes (211 specs)'
+# ─────────────────────────────────────────────────────────────
+# STAGE 1 — Pruebas Unitarias (Karma + Jasmine)
+# Valida lógica pura sin HTTP ni DOM: validators y utilidades.
+# No necesita backend. Siempre corre al hacer push a main.
+# ─────────────────────────────────────────────────────────────
+- stage: PruebasUnitarias
+  displayName: '1 · Unitarias (Karma + Jasmine)'
 
   jobs:
-  - job: Karma
-    displayName: 'Karma + Jasmine — ChromeHeadless'
+  - job: Unitarias
+    displayName: 'Karma + Jasmine — validators y utilidades'
 
     steps:
 
@@ -46,8 +47,83 @@ stages:
       displayName: 'Instalar dependencias (npm ci)'
 
     - script: |
-        npx ng test --watch=false --browsers=ChromeHeadless --code-coverage
-      displayName: 'Correr pruebas unitarias e integración'
+        npx ng test --watch=false --browsers=ChromeHeadless \
+          --include='src/app/auth/utils/validators.spec.ts'
+      displayName: 'Correr pruebas unitarias'
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 2 — Pruebas de Integración (Karma + Jasmine)
+# Valida servicios, guards e interceptores sin renderizar DOM.
+# Solo corre si el Stage 1 pasó.
+# ─────────────────────────────────────────────────────────────
+- stage: PruebasIntegracion
+  displayName: '2 · Integración (Karma + Jasmine)'
+  dependsOn: PruebasUnitarias
+  condition: succeeded()
+
+  jobs:
+  - job: Integracion
+    displayName: 'Karma + Jasmine — servicios, guards e interceptor'
+
+    steps:
+
+    - checkout: self
+
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: $(nodeVersion)
+
+    - script: npm ci
+      displayName: 'Instalar dependencias (npm ci)'
+
+    - script: |
+        npx ng test --watch=false --browsers=ChromeHeadless \
+          --include='src/app/core/auth.interceptor.spec.ts' \
+          --include='src/app/core/guards/auth.guard.spec.ts' \
+          --include='src/app/core/guards/role.guard.spec.ts' \
+          --include='src/app/pages/admin/services/contrato.service.spec.ts' \
+          --include='src/app/pages/admin/services/poliza.service.spec.ts' \
+          --include='src/app/pages/admin/services/proveedores.service.spec.ts' \
+          --include='src/app/pages/user/services/liquidacion.service.spec.ts' \
+          --include='src/app/pages/user/services/servicio.service.spec.ts' \
+          --include='src/app/shared/services/auth-state.service.spec.ts' \
+          --include='src/app/auth/services/user.service.spec.ts' \
+          --include='src/app/auth/services/auth.service.spec.ts'
+      displayName: 'Correr pruebas de integración'
+
+# ─────────────────────────────────────────────────────────────
+# STAGE 3 — Pruebas de Componentes (Karma + Jasmine — TestBed)
+# Renderiza templates HTML con TestBed y verifica interacciones.
+# Solo corre si el Stage 2 pasó. Genera reporte de cobertura.
+# ─────────────────────────────────────────────────────────────
+- stage: PruebasComponentes
+  displayName: '3 · Componentes (Karma + Jasmine — TestBed)'
+  dependsOn: PruebasIntegracion
+  condition: succeeded()
+
+  jobs:
+  - job: Componentes
+    displayName: 'Karma + Jasmine — componentes y directivas con TestBed'
+
+    steps:
+
+    - checkout: self
+
+    - task: NodeTool@0
+      displayName: 'Instalar Node.js $(nodeVersion)'
+      inputs:
+        versionSpec: $(nodeVersion)
+
+    - script: npm ci
+      displayName: 'Instalar dependencias (npm ci)'
+
+    - script: |
+        npx ng test --watch=false --browsers=ChromeHeadless --code-coverage \
+          --include='src/app/app.spec.ts' \
+          --include='src/app/**/*.component.spec.ts' \
+          --include='src/app/core/guards/has-role.directive.spec.ts'
+      displayName: 'Correr pruebas de componentes'
 
     - task: PublishCodeCoverageResults@2
       displayName: 'Publicar cobertura en Azure DevOps'
@@ -57,14 +133,14 @@ stages:
         pathToSources: '$(Build.SourcesDirectory)/src'
 
 # ─────────────────────────────────────────────────────────────
-# STAGE 2 — Pruebas E2E (Cypress headless)
+# STAGE 4 — Pruebas E2E (Cypress headless)
 # Clona el back, lo arranca en modo Testing (BD en memoria,
 # sin SQL Server) y corre Cypress contra los dos servicios.
-# Solo corre si el Stage 1 pasó.
+# Solo corre si el Stage 3 pasó.
 # ─────────────────────────────────────────────────────────────
 - stage: PruebasE2E
-  displayName: '2 · E2E — Cypress headless'
-  dependsOn: PruebasUnitariasIntegracion
+  displayName: '4 · E2E — Cypress headless'
+  dependsOn: PruebasComponentes
   condition: succeeded()
 
   jobs:
@@ -175,15 +251,22 @@ stages:
         mergeTestResults: true
         testRunTitle: 'Cypress E2E'
 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publicar videos y capturas de Cypress'
+      condition: always()
+      inputs:
+        pathToPublish: '$(Pipeline.Workspace)/front/cypress'
+        artifactName: 'cypress-report'
+
 # ─────────────────────────────────────────────────────────────
-# STAGE 3 — Pruebas de Mutación (Stryker)
+# STAGE 5 — Pruebas de Mutación (Stryker)
 # Mide la calidad de los tests matando mutantes del código.
-# No necesita backend. Corre después del Stage 1 (tests base).
+# No necesita backend. Corre en paralelo con los stages 4 y 6.
 # break: null → no falla el pipeline, solo reporta el score.
 # ─────────────────────────────────────────────────────────────
 - stage: PruebasMutacion
-  displayName: '3 · Mutación — Stryker'
-  dependsOn: PruebasUnitariasIntegracion
+  displayName: '5 · Mutación — Stryker'
+  dependsOn: PruebasComponentes
   condition: succeeded()
 
   jobs:
@@ -214,14 +297,14 @@ stages:
         artifactName: 'mutation-report'
 
 # ─────────────────────────────────────────────────────────────
-# STAGE 4 — Pruebas de Rendimiento (Lighthouse CI)
+# STAGE 6 — Pruebas de Rendimiento (Lighthouse CI)
 # Mide Performance, Accesibilidad, Best Practices y SEO.
-# No necesita backend. Corre en paralelo con Stage 2 y 3.
+# No necesita backend. Corre en paralelo con los stages 4 y 5.
 # continueOnError: true → nunca bloquea el pipeline.
 # ─────────────────────────────────────────────────────────────
 - stage: PruebasRendimiento
-  displayName: '4 · Rendimiento — Lighthouse CI'
-  dependsOn: PruebasUnitariasIntegracion
+  displayName: '6 · Rendimiento — Lighthouse CI'
+  dependsOn: PruebasComponentes
   condition: succeeded()
 
   jobs:
